@@ -20,4 +20,9 @@ public class BoardService {
 	public Board getBoard(Long id) {
 		return boardRepo.findById(id).get();
 	}
+	
+	// 새로운 항목 추가
+	public Board addBoard(Board board) {
+		return boardRepo.save(board);
+	}
 }
