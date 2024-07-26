@@ -2,9 +2,11 @@ package edu.pnu.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,10 +34,23 @@ public class BoardController {
 		return ResponseEntity.ok(boardService.getBoard(id));
 	}
 	
-	// post로 새로운 항목 추가하고 띄움
+	// 입력
 	@PostMapping("/board")
     public ResponseEntity<Board> addBoardItem(@RequestBody Board board){
 		return ResponseEntity.ok(boardService.addBoard(board));
 		
 	}
+	
+	// 수정
+	@PutMapping("/board")
+	public ResponseEntity<Board> updateBoardItem(@RequestBody Board board){
+		return ResponseEntity.ok(boardService.updateBoard(board));
+	}
+		
+	// 삭제
+	@DeleteMapping("/board/{id}")
+	public ResponseEntity<Board> deleteBoardItem(@PathVariable Long id){
+		return ResponseEntity.ok(boardService.deleteBoard(id));
+	}
+	
 }

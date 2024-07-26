@@ -25,4 +25,14 @@ public class BoardService {
 	public Board addBoard(Board board) {
 		return boardRepo.save(board);
 	}
+	// 기존항목 수정하기
+	public Board updateBoard(Board board) {
+		return boardRepo.save(board);
+	}
+	// 기존항목 삭제하기
+	public Board deleteBoard(Long id) {
+		Board findboard = boardRepo.findById(id).get();
+		boardRepo.delete(findboard);
+		return findboard;
+	}
 }

@@ -8,6 +8,7 @@ const DataDisplay = () => {
     // 빈 배열에 서버에서 받아온 게시판 데이터 저장
 
     const [board, setBoard] = useState({
+        id: null, // ID를 추가 (수정, 삭제할 때)
         title: '',
         content: '',
         writer: ''
@@ -43,13 +44,58 @@ const DataDisplay = () => {
         }
     };
 
+     // --- 데이터 수정하는 함수
+     const updateBoardItem = async () => {
+        try{
+            const response = await fetch(`http://localhost:8080/board`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(board)
+            });
+            const result = await response.json();
+            setBoard({ id: null, title: '', content: '', writer: '' }); // 입력 폼 초기화
+            loadBoard();
+        } catch (error) {
+            console.error('Error updating Board:', error);
+        }
+    };
+
+     // --- 데이터 삭제하는 함수
+     const deleteBoardItem = async () => {
+        try{
+            const response = await fetch(`http://localhost:8080/board/${board.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: board.id }) // 삭제할 때는 ID로만 
+            });
+            const result = await response.json();
+            setBoard({ id: null, title: '', content: '', writer: '' }); // 입력 폼 초기화
+            loadBoard();
+        } catch (error) {
+            console.error('Error deleting Board:', error);
+        }
+    };
+
     // --- 사용자가 입력할 때마다 board에 업데이트하는 함수
     const handleChange = (e) => {
         const { name, value } = e.target; // e의 target속성에서 name, value 추출
-        setBoard(prevState => ({ // 상태를 업데이트
-            ...prevState,        // 기존 상태를 ...prevState로 복사
-            [name]: value        // 새로운 값 설정
+        setBoard(prevState => ({          // 상태를 업데이트
+            ...prevState,                 // 기존 상태를 ...prevState로 복사
+            [name]: value                 // 새로운 값 설정
         }));
+    };
+
+    const handleSelect = (item) => {
+        setBoard({
+            id: item.id,
+            title: item.title,
+            content: item.content,
+            writer: item.writer
+        });
     };
 
     // --- 데이터 표시하는 함수
@@ -64,7 +110,7 @@ const DataDisplay = () => {
                 </thead>
                 <tbody>
                     {dataBoard.map(board => ( // dataBoard 배열의 요소 가져오기
-                        <tr key={board.id}>
+                        <tr key={board.id} onClick={() => handleSelect(board)}>
                             <td>{board.id}</td>
                             <td>{board.title}</td>
                             <td>{board.writer}</td>
@@ -103,10 +149,15 @@ const DataDisplay = () => {
                     placeholder="작성자"
                     onChange={handleChange}
                 />
-                <button onClick={addBoardItem}>추가하기</button></form>
+                <div>
+                    <button type="button" onClick={addBoardItem}>추가하기</button>
+                    <button type="button" onClick={updateBoardItem}>수정하기</button>
+                    <button type="button" onClick={deleteBoardItem}>삭제하기</button>
+                </div>
+                </form>
             </div>
             {/* 버튼 누르면 함수호출 -> 서버에서 데이터 가져옴 */}
-            <button onClick={() => loadBoard()}>게시판 보기</button> 
+            <button onClick={loadBoard}>게시판 보기</button> 
             <div>{loadData()}</div>
         </div>
     );
